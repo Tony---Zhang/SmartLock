@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "220871593019",
+    "project_id": "smartlock-e0371"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220871593019:android:9754371682293cc0",
+        "android_client_info": {
+          "package_name": "com.example.shuaiz.smartlock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220871593019-pe60duuneqahbb0jh79uijm5h8974j0p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shuaiz.smartlock",
+            "certificate_hash": "8C5CC4DE6ECC9CBDCFFB3352558D75DE36322933"
+          }
+        },
+        {
+          "client_id": "220871593019-8iqrqrnnn7nvvma3doda7kgqaoq2tkmr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHasFz_qdnN_IFOsXxZcrdeSmeCuGheKM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
