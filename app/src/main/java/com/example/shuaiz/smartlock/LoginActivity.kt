@@ -88,16 +88,20 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
             return
         }
 
-        val credentialToSave: Credential = Credential.Builder(email)
-                .setPassword(password)
-                .build()
+        if (googleApiClient?.isConnected!!) {
+            val credentialToSave: Credential = Credential.Builder(email)
+                    .setPassword(password)
+                    .build()
 
-        Auth.CredentialsApi
-                .save(googleApiClient, credentialToSave)
-                .setResultCallback {
-                    result ->
-                    handleCredentialSaveResult(result)
-                }
+            Auth.CredentialsApi
+                    .save(googleApiClient, credentialToSave)
+                    .setResultCallback {
+                        result ->
+                        handleCredentialSaveResult(result)
+                    }
+        } else {
+            showToast("Google Api is not connected")
+        }
     }
 
     private fun requestCredential() {
@@ -112,44 +116,41 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
     private fun handleCredentialSaveResult(result: Status) {
         when {
             result.isSuccess -> {
-                // Credentials were saved
-                Toast.makeText(this, "Credentials were saved", Toast.LENGTH_SHORT).show()
+                showToast("Credentials were saved")
             }
             result.hasResolution() -> {
-                // Try to resolve the save request
-                Toast.makeText(this, "Try to resolve the save request", Toast.LENGTH_SHORT).show()
+                showToast("Try to resolve the save request")
                 result.startResolutionForResult(this, RC_SAVE)
             }
             else -> {
-                // Could not resolve the request
-                Toast.makeText(this, "Could not resolve the request", Toast.LENGTH_SHORT).show()
+                showToast("Could not resolve the request")
             }
         }
+    }
+
+    private fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun handleCredentialRequestResult(result: CredentialRequestResult) {
         when {
             result.status.isSuccess -> {
-                // Handle successful credential requests
-                Toast.makeText(this, "Handle successful credential requests: name: " + result.credential.name, Toast.LENGTH_SHORT).show()
+                showToast("Handle successful credential requests: name: " + result.credential.name)
             }
             else -> {
-                // Handle unsuccessful and incomplete credential requests
-                Toast.makeText(this, "Handle unsuccessful and incomplete credential requests", Toast.LENGTH_SHORT).show()
+                showToast("Handle unsuccessful and incomplete credential requests")
             }
         }
     }
 
-    private fun createCredentialRequest() = CredentialRequest.Builder()
+    private fun createCredentialRequest(): CredentialRequest = CredentialRequest.Builder()
             .setPasswordLoginSupported(true)
             .build()
 
-    private fun createGoogleApiClient(): GoogleApiClient? {
-        return GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.CREDENTIALS_API)
-                .build()
-    }
+    private fun createGoogleApiClient(): GoogleApiClient = GoogleApiClient.Builder(this)
+            .addConnectionCallbacks(this)
+            .enableAutoManage(this, this)
+            .addApi(Auth.CREDENTIALS_API)
+            .build()
 }
 
