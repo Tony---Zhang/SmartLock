@@ -8,6 +8,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="action_save_credential">Save Credential</string>
     <string name="action_request_credential">Request Credential</string>
+    <string name="action_retrieve_hint">Retrieve Hint</string>
 
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>

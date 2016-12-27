@@ -11,7 +11,9 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.credentials.Credential
+import com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 import com.google.android.gms.auth.api.credentials.CredentialRequest
+import com.google.android.gms.auth.api.credentials.HintRequest
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.Status
@@ -22,6 +24,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
     companion object RCCode {
         val RC_SAVE: Int = 88
         val RC_REQUEST: Int = 89
+        val RC_HINT: Int = 90
     }
 
     private lateinit var emailLabel: AutoCompleteTextView
@@ -29,6 +32,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
     private lateinit var emailSignInButton: Button
     private lateinit var saveCredentialbutton: Button
     private lateinit var requestCredentialbutton: Button
+    private lateinit var retrieveHintButton: Button
 
     private var googleApiClient: GoogleApiClient? = null
 
@@ -53,6 +57,9 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
             }
             RC_REQUEST -> {
                 showToast("On Activity Result, request")
+            }
+            RC_HINT -> {
+                showToast("On Activity Result, hint")
             }
         }
         if (resultCode == AppCompatActivity.RESULT_CANCELED) {
@@ -79,6 +86,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
         emailSignInButton = findViewById(R.id.email_sign_in_button) as Button
         saveCredentialbutton = findViewById(R.id.save_credential_button) as Button
         requestCredentialbutton = findViewById(R.id.request_credential_button) as Button
+        retrieveHintButton = findViewById(R.id.retrieve_hint_button) as Button
     }
 
     private fun initData() {
@@ -88,6 +96,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
         emailLabel.setText("520zhangshuai@gmail.com")
         saveCredentialbutton.setOnClickListener { saveCredential() }
         requestCredentialbutton.setOnClickListener { requestCredential() }
+        retrieveHintButton.setOnClickListener { retrieveHint() }
     }
 
     private fun saveCredential() {
@@ -122,6 +131,23 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
                 .setResultCallback {
                     handleCredentialRequestResult(it.status)
                 }
+    }
+
+    private fun retrieveHint() {
+        val hintRequest = HintRequest.Builder()
+                .setHintPickerConfig(CredentialPickerConfig.Builder()
+                        .setShowCancelButton(true)
+                        .build())
+                .setEmailAddressIdentifierSupported(true)
+//                .setAccountTypes(IdentityProviders.GOOGLE)
+                .build()
+
+        val intent = Auth.CredentialsApi.getHintPickerIntent(googleApiClient, hintRequest)
+        try {
+            startIntentSenderForResult(intent.intentSender, RC_HINT, null, 0, 0, 0)
+        } catch (e: IntentSender.SendIntentException) {
+            Log.e(localClassName, "Could not start hint picker Intent", e)
+        }
     }
 
     private fun handleCredentialSaveResult(result: Status) {
