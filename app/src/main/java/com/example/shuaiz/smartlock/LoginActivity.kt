@@ -19,8 +19,10 @@ import com.google.android.gms.common.api.Status
 
 class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private val RC_SAVE: Int = 0
-    private val RC_REQUEST: Int = 1
+    companion object RCCode {
+        val RC_SAVE: Int = 88
+        val RC_REQUEST: Int = 89
+    }
 
     private lateinit var emailLabel: AutoCompleteTextView
     private lateinit var passwordLabel: EditText
@@ -45,13 +47,17 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
+        when (requestCode) {
             RC_SAVE -> {
                 showToast("On Activity Result, saved")
             }
             RC_REQUEST -> {
                 showToast("On Activity Result, request")
             }
+        }
+        if (resultCode == AppCompatActivity.RESULT_CANCELED) {
+            showToast("On Activity Result, canceled")
+            return
         }
     }
 
@@ -97,7 +103,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
             return
         }
 
-        if (googleApiClient?.isConnected!!) {
+        googleApiClient?.isConnected?.let {
             val credentialToSave: Credential = Credential.Builder(email)
                     .setPassword(password)
                     .build()
@@ -105,11 +111,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
             Auth.CredentialsApi
                     .save(googleApiClient, credentialToSave)
                     .setResultCallback {
-                        result ->
-                        handleCredentialSaveResult(result)
+                        handleCredentialSaveResult(it)
                     }
-        } else {
-            showToast("Google Api is not connected")
         }
     }
 
@@ -117,8 +120,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, 
         Auth.CredentialsApi
                 .request(googleApiClient, createCredentialRequest())
                 .setResultCallback {
-                    result ->
-                    handleCredentialRequestResult(result.status)
+                    handleCredentialRequestResult(it.status)
                 }
     }
 
